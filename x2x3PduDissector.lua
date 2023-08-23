@@ -35,7 +35,7 @@ x2x3_protocol = Proto("X2X3", "X2/X3 Lawful Interception PDU")
 
 -- Define the fields
 local fields = {
-    version = ProtoField.uint16("x2x3.version", "Version", base.DEC),
+    version = ProtoField.uint16("x2x3.version", "Version", base.HEX),
     pduType = ProtoField.uint16("x2x3.pduType", "PDU Type", base.DEC),
     headerLength = ProtoField.uint32("x2x3.headerLength", "Header Length", base.DEC),
     payloadLength = ProtoField.uint32("x2x3.payloadLength", "Payload Length", base.DEC),
@@ -159,17 +159,30 @@ function x2x3_protocol.dissector(buffer, pinfo, tree)
     local headerSubtree = subtree:add(x2x3_protocol, buffer(), "Headers")
     local payloadSubtree = subtree:add(x2x3_protocol, buffer(), "Payload")
 
-    headerSubtree:add(fields.version, buffer(0, 2))
+    -- Add version
+    local version_value = buffer(0, 2):uint()
+    local major = bit32.rshift(version_value, 8)
+    local minor = bit32.band(version_value, 0xFF)
+    local version_text = string.format("Version: Major: %d, Minor: %d", major, minor)
+    headerSubtree:add(fields.version, buffer(0, 2)):set_text(version_text)
+
+    -- Add pduType
     headerSubtree:add(fields.pduType, buffer(2, 2)):append_text(string.format(" (%s)", pduTypesMap[buffer(2, 2):uint()]))
+    -- Add headerLength
     headerSubtree:add(fields.headerLength, buffer(4, 4)):append_text(string.format(" bytes"))
     local headerLength = buffer(4, 4):uint()
+    -- Add payloadLength
     headerSubtree:add(fields.payloadLength, buffer(8, 4)):append_text(string.format(" bytes"))
+    -- Add payloadFormat
     headerSubtree:add(fields.payloadFormat, buffer(12, 2)):append_text(string.format(" (%s)", payloadTypesMap
         [buffer(12, 2):uint()]))
     local payloadFormat = buffer(12, 2):uint()
+    -- Add payloadDirection
     headerSubtree:add(fields.payloadDirection, buffer(14, 2)):append_text(string.format(" (%s)",
         payloadDirectionMap[buffer(14, 2):uint()]))
+    -- Add xid
     headerSubtree:add(fields.xid, buffer(16, 16))
+    -- Add correlationId
     headerSubtree:add(fields.correlationId, buffer(32, 8))
 
     -- Add conditional attributes

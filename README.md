@@ -1,26 +1,33 @@
 # x2x3PduDissector
 X2/X3 Lawful Interception PDU Wireshark Dissector 
 
-This Lua script is designed to dissect Lawful Interception Protocol (X2/X3 PDU Format)
-packets within Wireshark. The script decodes various fields, including version,
-PDU type, payload format, payload direction, XID (UUID), correlation ID, and
-conditional attributes. It also handles payload interpretation for RTP and SIP
-messages. The conditional attributes are dissected as TLVs.
+Welcome to the X2/X3 Lawful Interception PDU Wireshark Dissector! This Lua script is designed to decode Lawful Interception X2 and X3 standards PDU within Wireshark, offering deep insights into each field's semantic meaning. Dive into the world of X2/X3 PDU Format with ease and precision.
 
-### Purpose:
-The purpose of this script is to enhance the analysis of Lawful Interception Protocol
-packets by providing a clear representation of the protocol's fields, including their
-semantic meanings. It aims to make it easier for analysts to understand and interpret
-the captured traffic related to this protocol.
+## Introduction: Unveiling the Protocol
 
-### Usage:
-1. Place this script in Wireshark's Plugins directory or load it manually through the
-   "Tools > Lua > Evaluate" menu.
-2. Once loaded, this script will automatically dissect packets using the "X2X3" protocol.
-3. The script provides detailed information about each field within the X2/X3 PDU Format,
-   including conditional attributes.
+The Lawful Interception Protocol (X2/X3) plays a crucial role in communication networks, enabling lawful interception for security and monitoring purposes. Analyzing these packets offers invaluable insights into network behavior and potential security vulnerabilities. Also if you are developing IMS/VoLTE/VoNR, 100% you need to provide LI interfaces to related agencies.
 
-### Note:
-- This script is provided as-is and may require updates to match any changes in the
-  protocol specification or Wireshark's Lua API.
-- For any questions or issues related to the script, please contact me.
+## Features and Benefits: Decode with Confidence
+
+- Clear Representation: Our script provides a crystal-clear dissection of X2/X3 packets, including version, PDU type, payload format, payload direction, XID (UUID), correlation ID, and conditional attributes.
+- Simplified Analysis: Say goodbye to the complexity of manual decoding. Our script empowers analysts to quickly grasp packet details and potential implications.
+- RTP and SIP Interpretation: Seamlessly interpret RTP and SIP messages within the payload, enhancing your understanding of multimedia and communication traffic.
+
+## Usage: Navigating the Script
+
+Place the script in Wireshark's Plugins directory or manually load it via "Tools > Lua > Evaluate."
+As soon as it's loaded, our script takes charge, automatically dissecting packets under the "X2X3" protocol.
+Witness the magic as each field comes to life, giving you unparalleled insights into the captured traffic.
+Interactive Example: Decoding Made Visual
+
+See the power of our script in action:
+
+Encountering issues? We've got you covered:
+
+If you face errors, ensure the script is compatible with the protocol's specifications and Wireshark's Lua API.
+Reach out for assistance if you run into any hurdles during your exploration.
+Acknowledgments: We're in This Together
+
+A big shoutout to the network analysis community for their inspiration and contributions to enhancing the protocol analysis experience.
+
+For any questions or feedback, feel free to contact me.

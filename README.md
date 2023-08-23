@@ -22,7 +22,13 @@ Interactive Example: Decoding Made Visual
 
 See the power of our script in action:
 
-Encountering issues? We've got you covered:
+![image](https://github.com/hyavari/x2x3PduDissector/assets/10007189/c1533013-2319-48f5-b2a7-3026cb6faf36)
+
+
+![image](https://github.com/hyavari/x2x3PduDissector/assets/10007189/198d32bd-017e-489e-9c19-0ea0a5585637)
+
+
+## Encountering issues? We've got you covered!
 
 If you face errors, ensure the script is compatible with the protocol's specifications and Wireshark's Lua API.
 Reach out for assistance if you run into any hurdles during your exploration.

@@ -12,6 +12,7 @@ The Lawful Interception Protocol (X2/X3) plays a crucial role in communication n
 - Clear Representation: Our script provides a crystal-clear dissection of X2/X3 packets, including version, PDU type, payload format, payload direction, XID (UUID), correlation ID, and conditional attributes.
 - Simplified Analysis: Say goodbye to the complexity of manual decoding. Our script empowers analysts to quickly grasp packet details and potential implications.
 - RTP and SIP Interpretation: Seamlessly interpret RTP and SIP messages within the payload, enhancing your understanding of multimedia and communication traffic.
+- 3GPP Compatible: ETSI TS 103 221-2 V1.1.1 (2019-03)
 
 ## Usage: Navigating the Script
 

@@ -116,9 +116,8 @@ local function conditional_attributes_dissector(buffer, pinfo, tree)
         local attribute_type = buffer(offset, 2):uint()
         local attribute_length = buffer(offset + 2, 2):uint()
 
-        local attribute_tree = subtree:add(buffer(offset, attribute_length + 4), "Attribute")
-        attribute_tree:add(attribute_type, buffer(offset, 2)):append_text(string.format(" (%s)",
-            attributeTypesMap[attribute_type]))
+        local attribute_tree = subtree:add(buffer(offset, attribute_length + 4), attributeTypesMap[attribute_type])
+        attribute_tree:add(attribute_type, buffer(offset, 2)):append_text(" (Type)")
         attribute_tree:add(attribute_length, buffer(offset + 2, 2)):append_text(string.format(
             " bytes"))
 
@@ -139,11 +138,11 @@ local function conditional_attributes_dissector(buffer, pinfo, tree)
                 buffer(offset + 4, attribute_length)):append_text(" (Value)")
         elseif attribute_type == 12 or attribute_type == 13 then
             attribute_value = buffer(offset + 4, attribute_length)
-            attribute_tree:add("Value", attribute_value):append_text(string.format(": %s",
+            attribute_tree:add("Value", attribute_value):set_text(string.format("%s (Value)",
                 attribute_value:ipv6()))
         elseif attribute_type == 10 or attribute_type == 11 then
             attribute_value = buffer(offset + 4, attribute_length)
-            attribute_tree:add("Value", attribute_value):append_text(string.format(": %s",
+            attribute_tree:add("Value", attribute_value):set_text(string.format(" %s (Value)",
                 attribute_value:ipv4()))
         else
             attribute_tree:add(attribute_value, buffer(offset + 4, attribute_length)):append_text(" (Value)")

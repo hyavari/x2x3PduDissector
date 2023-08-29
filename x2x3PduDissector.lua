@@ -154,6 +154,17 @@ end
 
 -- Dissector function
 function x2x3_protocol.dissector(buffer, pinfo, tree)
+    -- Check if the buffer length is valid
+    if not buffer:len() then
+        return
+    end
+
+    -- TCP reassemble issue
+    if buffer(8, 4):uint() > buffer:len() - buffer(4, 4):uint() then
+        pinfo.desegment_len = DESEGMENT_ONE_MORE_SEGMENT
+        return
+    end
+
     -- Perform sanity check on header values
     local pduType = buffer(2, 2):uint()
     if not pduTypesMap[pduType] then

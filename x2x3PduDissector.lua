@@ -188,8 +188,10 @@ function x2x3_protocol.dissector(buffer, pinfo, tree)
     conditional_attributes_dissector(buffer(40, headerLength - 40), pinfo, headerSubtree)
 
     -- Add payload field
-    -- Check if the payload format is RTP (8) or SIP Message (9)
-    if payloadFormat == 8 then
+    if payloadFormat == 0 then
+        payloadSubtree:add("nil", buffer(headerLength, buffer:len() - headerLength)):append_text(" (Keepalive)")
+        -- Check if the payload format is RTP (8) or SIP Message (9)
+    elseif payloadFormat == 8 then
         -- Call the RTP dissector for the payload
         local rtp_dissector = Dissector.get("rtp")
         rtp_dissector:call(buffer(headerLength, buffer:len() - headerLength):tvb(), pinfo, payloadSubtree)
@@ -199,9 +201,7 @@ function x2x3_protocol.dissector(buffer, pinfo, tree)
         sip_dissector:call(buffer(headerLength, buffer:len() - headerLength):tvb(), pinfo, payloadSubtree)
     else
         -- Handle other payload formats or display as raw data
-        payloadSubtree:add(fields.payload, buffer(headerLength, buffer:len() - headerLength)):append_text(string
-            .format(
-                " (Raw data)"))
+        payloadSubtree:add(fields.payload, buffer(headerLength, buffer:len() - headerLength)):append_text(" (Raw data)")
     end
 
     -- Set the protocol name in the packet details

@@ -154,6 +154,12 @@ end
 
 -- Dissector function
 function x2x3_protocol.dissector(buffer, pinfo, tree)
+    -- Perform sanity check on header values
+    local pduType = buffer(2, 2):uint()
+    if not pduTypesMap[pduType] then
+        return
+    end
+
     local subtree = tree:add(x2x3_protocol, buffer())
     local headerSubtree = subtree:add(x2x3_protocol, buffer(), "Headers")
     local payloadSubtree = subtree:add(x2x3_protocol, buffer(), "Payload")
@@ -167,20 +173,26 @@ function x2x3_protocol.dissector(buffer, pinfo, tree)
 
     -- Add pduType
     headerSubtree:add(fields.pduType, buffer(2, 2)):append_text(string.format(" (%s)", pduTypesMap[buffer(2, 2):uint()]))
+
     -- Add headerLength
     headerSubtree:add(fields.headerLength, buffer(4, 4)):append_text(string.format(" bytes"))
     local headerLength = buffer(4, 4):uint()
+
     -- Add payloadLength
     headerSubtree:add(fields.payloadLength, buffer(8, 4)):append_text(string.format(" bytes"))
+
     -- Add payloadFormat
     headerSubtree:add(fields.payloadFormat, buffer(12, 2)):append_text(string.format(" (%s)", payloadTypesMap
         [buffer(12, 2):uint()]))
     local payloadFormat = buffer(12, 2):uint()
+
     -- Add payloadDirection
     headerSubtree:add(fields.payloadDirection, buffer(14, 2)):append_text(string.format(" (%s)",
         payloadDirectionMap[buffer(14, 2):uint()]))
+
     -- Add xid
     headerSubtree:add(fields.xid, buffer(16, 16))
+
     -- Add correlationId
     headerSubtree:add(fields.correlationId, buffer(32, 8))
 

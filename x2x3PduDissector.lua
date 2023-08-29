@@ -172,19 +172,23 @@ function x2x3_protocol.dissector(buffer, pinfo, tree)
     headerSubtree:add(fields.version, buffer(0, 2)):set_text(version_text)
 
     -- Add pduType
-    headerSubtree:add(fields.pduType, buffer(2, 2)):append_text(string.format(" (%s)", pduTypesMap[buffer(2, 2):uint()]))
+    headerSubtree:add(fields.pduType, buffer(2, 2)):append_text(string.format(" (%s)", pduTypesMap[pduType]))
+    -- More readable output
+    if pduType == 3 or pduType == 4 then
+        pinfo.cols.info:set(pduTypesMap[pduType])
+    end
 
     -- Add headerLength
-    headerSubtree:add(fields.headerLength, buffer(4, 4)):append_text(string.format(" bytes"))
     local headerLength = buffer(4, 4):uint()
+    headerSubtree:add(fields.headerLength, buffer(4, 4)):append_text(string.format(" bytes"))
 
     -- Add payloadLength
     headerSubtree:add(fields.payloadLength, buffer(8, 4)):append_text(string.format(" bytes"))
 
     -- Add payloadFormat
+    local payloadFormat = buffer(12, 2):uint()
     headerSubtree:add(fields.payloadFormat, buffer(12, 2)):append_text(string.format(" (%s)", payloadTypesMap
         [buffer(12, 2):uint()]))
-    local payloadFormat = buffer(12, 2):uint()
 
     -- Add payloadDirection
     headerSubtree:add(fields.payloadDirection, buffer(14, 2)):append_text(string.format(" (%s)",

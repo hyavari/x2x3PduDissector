@@ -152,24 +152,7 @@ local function conditional_attributes_dissector(buffer, pinfo, tree)
     end
 end
 
--- Dissector function
-function X2X3_protocol.dissector(buffer, pinfo, tree)
-    -- Check if the buffer length is valid
-    if not buffer:len() then
-        return
-    end
-
-    -- TCP reassemble issue
-    if buffer(8, 4):uint() > buffer:len() - buffer(4, 4):uint() then
-        pinfo.desegment_len = DESEGMENT_ONE_MORE_SEGMENT
-        return
-    end
-
-    -- TODO: need to hanle merged PDUs, not decode for now!
-    if buffer:len() > buffer(4, 4):uint() + buffer(8, 4):uint() then
-        return
-    end
-
+local function pdu_dissector(buffer, pinfo, tree)
     -- Perform sanity check on header values
     local pduType = buffer(2, 2):uint()
     if not pduTypesMap[pduType] then
@@ -234,6 +217,36 @@ function X2X3_protocol.dissector(buffer, pinfo, tree)
     else
         -- Handle other payload formats or display as raw data
         payloadSubtree:add(fields.payload, buffer(headerLength, buffer:len() - headerLength)):append_text(" (Raw data)")
+    end
+end
+
+-- Dissector function
+function X2X3_protocol.dissector(buffer, pinfo, tree)
+    -- Check if the buffer length is valid
+    if not buffer:len() then
+        return
+    end
+
+    -- TCP reassemble issue
+    if buffer(4, 4):uint() + buffer(8, 4):uint() > buffer:len() and buffer(8, 4):uint() > buffer:len() - buffer(4, 4):uint() then
+        pinfo.desegment_len = DESEGMENT_ONE_MORE_SEGMENT
+        return
+    end
+
+    local offset = 0
+
+    while offset < buffer:len() do
+        -- Check if the buffer length is valid
+        if offset + 12 > buffer:len() or offset + buffer(offset + 4, 4):uint() + buffer(offset + 8, 4):uint() > buffer:len() then
+            pinfo.desegment_len = DESEGMENT_ONE_MORE_SEGMENT
+            return
+        end
+
+        -- Call the pdu dissector for each pdu
+        local pdu_length = buffer(offset + 4, 4):uint() + buffer(offset + 8, 4):uint()
+        pdu_dissector(buffer(offset, pdu_length):tvb(), pinfo, tree)
+
+        offset = offset + pdu_length
     end
 
     -- Set the protocol name in the packet details

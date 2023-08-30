@@ -31,7 +31,7 @@ Note:
 --]]
 
 -- Define the protocol
-x2x3_protocol = Proto("X2X3", "X2/X3 Lawful Interception PDU")
+X2X3_protocol = Proto("X2X3", "X2/X3 Lawful Interception PDU")
 
 -- Define the fields
 local fields = {
@@ -46,7 +46,7 @@ local fields = {
     payload = ProtoField.bytes("x2x3.payload", "Payload")
 }
 
-x2x3_protocol.fields = fields
+X2X3_protocol.fields = fields
 
 local pduTypesMap = {
     [1] = "X2",
@@ -110,7 +110,7 @@ local ipProtocolsMap = {
 -- Define the dissector function for conditional attributes
 local function conditional_attributes_dissector(buffer, pinfo, tree)
     local offset = 0
-    local subtree = tree:add(x2x3_protocol, buffer(), "Conditional Attributes")
+    local subtree = tree:add(X2X3_protocol, buffer(), "Conditional Attributes")
 
     while offset < buffer:len() do
         local attribute_type = buffer(offset, 2):uint()
@@ -153,7 +153,7 @@ local function conditional_attributes_dissector(buffer, pinfo, tree)
 end
 
 -- Dissector function
-function x2x3_protocol.dissector(buffer, pinfo, tree)
+function X2X3_protocol.dissector(buffer, pinfo, tree)
     -- Check if the buffer length is valid
     if not buffer:len() then
         return
@@ -165,15 +165,20 @@ function x2x3_protocol.dissector(buffer, pinfo, tree)
         return
     end
 
+    -- TODO: need to hanle merged PDUs, not decode for now!
+    if buffer:len() > buffer(4, 4):uint() + buffer(8, 4):uint() then
+        return
+    end
+
     -- Perform sanity check on header values
     local pduType = buffer(2, 2):uint()
     if not pduTypesMap[pduType] then
         return
     end
 
-    local subtree = tree:add(x2x3_protocol, buffer())
-    local headerSubtree = subtree:add(x2x3_protocol, buffer(), "Headers")
-    local payloadSubtree = subtree:add(x2x3_protocol, buffer(), "Payload")
+    local subtree = tree:add(X2X3_protocol, buffer())
+    local headerSubtree = subtree:add(X2X3_protocol, buffer(), "Headers")
+    local payloadSubtree = subtree:add(X2X3_protocol, buffer(), "Payload")
 
     -- Add version
     local version_value = buffer(0, 2):uint()
@@ -232,9 +237,9 @@ function x2x3_protocol.dissector(buffer, pinfo, tree)
     end
 
     -- Set the protocol name in the packet details
-    pinfo.cols.protocol = x2x3_protocol.name
+    pinfo.cols.protocol = X2X3_protocol.name
 end
 
 -- Register the dissector
-DissectorTable.get("tcp.port"):add(0, x2x3_protocol)
-DissectorTable.get("udp.port"):add(0, x2x3_protocol)
+DissectorTable.get("tcp.port"):add(0, X2X3_protocol)
+DissectorTable.get("udp.port"):add(0, X2X3_protocol)

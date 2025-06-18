@@ -42,7 +42,7 @@ local fields = {
     payloadFormat = ProtoField.uint16("x2x3.payloadFormat", "Payload Format", base.DEC),
     payloadDirection = ProtoField.uint16("x2x3.payloadDirection", "Payload Direction", base.DEC),
     xid = ProtoField.guid("x2x3.xid", "XID (UUID)"),
-    correlationId = ProtoField.string("x2x3.correlationId", "Correlation ID"),
+    correlationId = ProtoField.uint64("x2x3.correlationId", "Correlation ID", base.HEX),
     payload = ProtoField.bytes("x2x3.payload", "Payload")
 }
 
@@ -129,7 +129,7 @@ local function conditional_attributes_dissector(buffer, pinfo, tree)
         elseif attribute_type == 9 then
             local seconds = buffer(offset + 4, 4):uint()
             local nanoseconds = buffer(offset + 8, 4):uint()
-            local timestamp_value = seconds + nanoseconds * 1e-9
+            local timestamp_value = seconds + nanoseconds 
             local formatted_timestamp = os.date("%Y-%m-%d %H:%M:%S", timestamp_value)
             attribute_tree:add(formatted_timestamp, buffer(offset + 4, attribute_length - 4))
                 :append_text(" (Value)")
@@ -165,8 +165,8 @@ local function pdu_dissector(buffer, pinfo, tree)
 
     -- Add version
     local version_value = buffer(0, 2):uint()
-    local major = bit32.rshift(version_value, 8)
-    local minor = bit32.band(version_value, 0xFF)
+    local major = bit.rshift(version_value, 8)
+    local minor = bit.band(version_value, 0xFF)
     local version_text = string.format("Version: Major: %d, Minor: %d", major, minor)
     headerSubtree:add(fields.version, buffer(0, 2)):set_text(version_text)
 

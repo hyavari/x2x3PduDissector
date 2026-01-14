@@ -129,9 +129,8 @@ local function conditional_attributes_dissector(buffer, pinfo, tree)
         elseif attribute_type == 9 then
             local seconds = buffer(offset + 4, 4):uint()
             local nanoseconds = buffer(offset + 8, 4):uint()
-            local timestamp_value = seconds + nanoseconds 
-            local formatted_timestamp = os.date("%Y-%m-%d %H:%M:%S", timestamp_value)
-            attribute_tree:add(formatted_timestamp, buffer(offset + 4, attribute_length - 4))
+            local formatted_timestamp = os.date("%Y-%m-%d %H:%M:%S", seconds)
+            attribute_tree:add(string.format("%s.%09d", formatted_timestamp, nanoseconds), buffer(offset + 4, attribute_length))
                 :append_text(" (Value)")
         elseif attribute_type == 16 then
             attribute_tree:add(ipProtocolsMap[buffer(offset + 4, attribute_length):uint()],

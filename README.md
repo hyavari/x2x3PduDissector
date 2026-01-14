@@ -1,40 +1,44 @@
 # x2x3PduDissector
-X2/X3 Lawful Interception PDU Wireshark Dissector 
 
-Welcome to the X2/X3 Lawful Interception PDU Wireshark Dissector! This Lua script is designed to decode Lawful Interception X2 and X3 standards PDU within Wireshark, offering deep insights into each field's semantic meaning. Dive into the world of X2/X3 PDU Format with ease and precision.
+Wireshark Lua dissector for X2/X3 Lawful Interception PDU format (ETSI TS 103 221-2).
 
-## Introduction: Unveiling the Protocol
+If you're working on IMS/VoLTE/VoNR, you'll likely need LI interfaces at some point. This dissector makes debugging those a lot easier.
 
-The Lawful Interception Protocol (X2/X3) plays a crucial role in communication networks, enabling lawful interception for security and monitoring purposes. Analyzing these packets offers invaluable insights into network behavior and potential security vulnerabilities. Also if you are developing IMS/VoLTE/VoNR, 100% you need to provide LI interfaces to related agencies.
+## Features
 
-## Features and Benefits: Decode with Confidence
+- Decodes all X2/X3 header fields: version, PDU type, payload format, payload direction, XID (UUID), correlation ID
+- Parses conditional attributes (TLV format): timestamps, IPs, ports, sequence numbers, etc.
+- Hands off RTP and SIP payloads to Wireshark's built-in dissectors
+- Handles TCP reassembly for split PDUs
 
-- Clear Representation: Our script provides a crystal-clear dissection of X2/X3 packets, including version, PDU type, payload format, payload direction, XID (UUID), correlation ID, and conditional attributes.
-- Simplified Analysis: Say goodbye to the complexity of manual decoding. Our script empowers analysts to quickly grasp packet details and potential implications.
-- RTP and SIP Interpretation: Seamlessly interpret RTP and SIP messages within the payload, enhancing your understanding of multimedia and communication traffic.
-- 3GPP Compatible: ETSI TS 103 221-2 V1.1.1 (2019-03)
+## Installation
 
-## Usage: Navigating the Script
+Copy `x2x3PduDissector.lua` to your Wireshark plugins folder:
 
-Place the script in Wireshark's Plugins directory or manually load it via "Tools > Lua > Evaluate."
-As soon as it's loaded, our script takes charge, automatically dissecting packets under the "X2X3" protocol.
-Witness the magic as each field comes to life, giving you unparalleled insights into the captured traffic.
-Interactive Example: Decoding Made Visual
+- **Linux**: `~/.local/lib/wireshark/plugins/`
+- **macOS**: `~/.local/lib/wireshark/plugins/` or `/Applications/Wireshark.app/Contents/PlugIns/wireshark/`
+- **Windows**: `%APPDATA%\Wireshark\plugins\`
 
-See the power of our script in action:
+Or load it manually: **Tools → Lua → Evaluate**
+
+## Usage
+
+Once loaded, apply "X2X3" as a filter or right-click a packet and select **Decode As → X2X3**.
+
+The dissector registers on TCP/UDP port 0 by default - you may want to edit the last lines to specify your actual LI ports.
+
+## Screenshots
 
 ![image](https://github.com/hyavari/x2x3PduDissector/assets/10007189/c1533013-2319-48f5-b2a7-3026cb6faf36)
 
-
 ![image](https://github.com/hyavari/x2x3PduDissector/assets/10007189/198d32bd-017e-489e-9c19-0ea0a5585637)
 
+## Troubleshooting
 
-## Encountering issues? We've got you covered!
+- Make sure you're running a recent Wireshark version with Lua support enabled
+- Check **Tools → Lua → Console** for any script errors
+- If packets aren't being decoded, verify the port registration at the bottom of the script
 
-If you face errors, ensure the script is compatible with the protocol's specifications and Wireshark's Lua API.
-Reach out for assistance if you run into any hurdles during your exploration.
-Acknowledgments: We're in This Together
+## Questions?
 
-A big shoutout to the network analysis community for their inspiration and contributions to enhancing the protocol analysis experience.
-
-For any questions or feedback, feel free to contact me.
+Open an issue or reach out via email.
